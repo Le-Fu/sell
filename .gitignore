@@ -5,3 +5,7 @@ npm-debug.log
 selenium-debug.log
 test/unit/coverage
 test/e2e/reports
+.idea/watcherTasks.xml
+.idea/watcherTasks.xml
+.idea/workspace.xml
+.idea/watcherTasks.xml
