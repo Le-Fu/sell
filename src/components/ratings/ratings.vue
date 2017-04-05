@@ -1,13 +1,13 @@
 <template>
-  <div id="header">
-    我是header.
+  <div class="ratings">
+    I am ratings.
   </div>
 </template>
 
-<script type="ecmascript-6">
+<script type="text/ecmascript-6">
   export default {
 
-  }
+  };
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
