@@ -30,8 +30,7 @@
       this.$http.get('/api/seller').then((response) => {
           response = response.body;
           if (response.errno === ERR_OK) {
-              this.seller = response;
-              console.log(this.seller);
+              this.seller = response.data;
           }
       });
     },
