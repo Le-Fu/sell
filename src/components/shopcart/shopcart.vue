@@ -11,7 +11,7 @@
         <div class="price" :class="{'highlight': totalCount}">￥{{totalPrice}}</div>
         <div class="desc">另需配送费￥{{deliveryPrice}}元</div>
       </div>
-      <div class="content-right">
+      <div class="content-right" @click.stop.prevent="pay">
         <div class="pay" :class="payClass">
           {{payDesc}}
         </div>
@@ -25,9 +25,9 @@
     <div class="shopcart-list" v-show="listShow" transition="fold">
       <div class="list-header">
         <h1 class="title">购物车</h1>
-        <span class="empty">清空</span>
+        <span class="empty" @click="empty">清空</span>
       </div>
-      <div class="list-content">
+      <div class="list-content" v-el:list-content>
         <ul>
           <li class="food" v-for="food in selectFoods">
             <span class="name">{{food.name}}</span>
@@ -42,9 +42,11 @@
       </div>
     </div>
   </div>
+  <div class="list-mask" v-show="listShow" transition="fade" @click="hideList"></div>
 </template>
 
 <script type="text/ecmascript-6">
+  import BScroll from 'better-scroll';
   import cartcontrol from 'components/cartcontrol/cartcontrol';
 
   export default {
@@ -125,6 +127,17 @@
           return false;
         }
         let show = !this.fold;
+        if (show) {
+          this.$nextTick(() => {
+            if (!this.scroll) {
+              this.scroll = new BScroll(this.$els.listContent, {
+                click: true
+              });
+            } else {
+              this.scroll.refresh();
+            }
+          });
+        }
         return show;
       }
     },
@@ -145,8 +158,21 @@
           return;
         }
         this.fold = !this.fold;
+      },
+      empty() {
+        this.selectFoods.forEach((food) => {
+          food.count = 0;
+        });
+      },
+      hideList() {
+        this.fold = true;
+      },
+      pay() {
+        if (this.totalPrice < this.minPrice) {
+          return;
+        }
+        window.alert(`支付${this.totalPrice}元`);
       }
-
     },
     transitions: {
       drop: {
@@ -194,6 +220,8 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+  @import "../../common/stylus/mixin.styl";
+
   .shopcart
     position: fixed
     left: 0
@@ -320,12 +348,48 @@
           float: right
           font-size: 12px
           color: rgb(7, 160, 220)
-
-
       .list-content
         padding: 0 18px
         max-height: 217px
         overflow: hidden
         background-color: #fff
+        .food
+          position: relative
+          padding: 12px 0
+          box-sizing: border-box
+          border-1px(rgba(7, 17, 27, 0.1))
+          .name
+            line-height: 24px
+            font-size: 14px
+            color: rgb(7, 17, 27)
+          .price
+            position: absolute
+            right: 90px
+            bottom: 12px
+            line-height: 24px
+            font-weight: 700
+            font-size: 14px
+            color: rgb(240, 20, 20)
+          .cartcontrol-wrapper
+            position: absolute
+            right: 0
+            bottom: 6px
+
+  .list-mask
+    position: fixed
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    z-index: 40
+    backdrop-filter: blur(10px);
+    &.fade-transition
+      transition: all 0.4s
+      opacity: 1
+      background-color: rgba(7, 17, 27, 0.6)
+    &.fade-enter, &.fade-leave
+      opacity: 0
+      background-color: rgba(7, 17, 27, 0.6)
+
 </style>
 
