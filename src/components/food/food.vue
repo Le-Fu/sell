@@ -40,14 +40,14 @@
                 <span class="name">{{rating.username}}</span>
                 <img class="avatar" :src="rating.avatar" width="12" height="12" alt="">
               </div>
-              <div class="time">{{rating.rateTime}}</div>
+              <div class="time">{{rating.rateTime | formatDate}}</div>
               <p class="text">
                 <span :class="{'icon-thumb_up': rating.rateType===0, 'icon-thumb_down': rating.rateType===1}"></span>
                 {{rating.text}}
               </p>
             </li>
           </ul>
-          <div class="no-rating" v-show="!food.ratings || !food.ratings.length"></div>
+          <div class="no-rating" v-show="!food.ratings || !food.ratings.length">暂无评价</div>
         </div>
       </div>
     </div>
@@ -60,6 +60,7 @@
   import cartcontrol from 'components/cartcontrol/cartcontrol';
   import split from 'components/split/split';
   import ratingselect from 'components/ratingselect/ratingselect';
+  import {formatDate} from 'common/js/date';
 
   //  const POSITIVE = 0;
   //  const NEGATIVE = 1;
@@ -110,21 +111,33 @@
       },
       needShow(type, text) {
         if (this.onlyContent && !text) {
-              return false;
+          return false;
         }
         if (this.selectType === ALL) {
-            return true;
+          return true;
         } else {
-            return type === this.selectType;
+          return type === this.selectType;
         }
       }
     },
     events: {
-      'ratingtype.select'() {
-
+      'ratingtype.select'(type) {
+        this.selectType = type;
+        this.$nextTick(() => {
+          this.scroll.refresh();
+        });
       },
-      'content.toggle'() {
-
+      'content.toggle'(onlyContent) {
+        this.onlyContent = onlyContent;
+        this.$nextTick(() => {
+          this.scroll.refresh();
+        });
+      }
+    },
+    filters: {
+      formatDate(time) {
+        let date = new Date(time);
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
       }
     },
     components: {
@@ -281,6 +294,10 @@
               color: rgb(0, 160, 220)
             .icon-thumb_down
               color: rgb(147, 153, 159)
+        .no-rating
+          padding: 16px 0
+          font-size: 12px
+          color: rgb(147, 153, 159)
 
 
 </style>
